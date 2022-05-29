@@ -1,30 +1,68 @@
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
 import {Paper, Typography} from "@mui/material";
+import groq from "groq";
+import {getClient} from "../lib/sanity-server";
+import Link from "next/link";
 
-export default function Home() {
+export default function Home({ products }) {
+  console.log('products', products);
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
-        <title>Create Next AppS</title>
+        <title>Home | Renzitos</title>
         <link rel="icon" href="/favicon.ico"/>
       </Head>
 
-      <main className={styles.main}>
-        <Paper elevation={5} sx={{p:5}}>
+      <main>
+        <Paper elevation={5} sx={{p: 5}}>
           <Typography variant='h1'>
-            Welcome to <a href="https://nextjs.org">
-            Next.js!</a> integrated with{" "}
-            <a href="https://mui.com/">Material-UI!</a>
+            home
           </Typography>
-          <Typography variant='body1'>
-            Get started by editing{" "}
-            <code className={styles.code}>
-              pages/index.js</code>
-          </Typography>
+          <Link href='/productos'>productos</Link>
         </Paper>
+
+        {
+          products.map((product) => (
+            <Paper key={product._id} elevation={2} sx={{ m: 5, p: 5 }}>
+              <Typography variant='h3'>
+                {product.title}
+              </Typography>
+              <Link href={`/productos/${product.slug.current}`}>Ir a verlo!</Link>
+            </Paper>
+          ))
+        }
 
       </main>
     </div>
   );
 }
+
+const query = groq`
+ *[_type == "product"] {
+  _id,
+  title,
+  brand,
+  code,
+  image,
+  slug,
+  stock,
+  "categories": categories[]->{_id, title},
+  "colors": colors[]->{_id, title, value},
+  "sizes": sizes[]->{_id, title},
+  "genders": genders[]->{_id, title},
+  materials,
+  unitPrice,
+  wholesalePrice
+}
+`
+
+export async function getServerSideProps({preview = false}) {
+  const products = await getClient(preview).fetch(query)
+  console.log('server Product', products);
+  return {
+    props: {
+      products
+    }
+  }
+}
+

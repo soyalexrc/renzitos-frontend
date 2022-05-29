@@ -1,11 +1,12 @@
 import Head from "next/head";
 import {Paper, Typography} from "@mui/material";
-import groq from "groq";
-import {getClient} from "../../lib/sanity-server";
 import Link from "next/link";
+import useGetProducts from "../../src/hooks/api/useGetProducts";
 
-export default function Productos({ products }) {
-  console.log('products', products);
+export default function Productos() {
+  const {data, loading, error} = useGetProducts()
+  console.log('data', data);
+
   return (
     <div>
       <Head>
@@ -18,10 +19,12 @@ export default function Productos({ products }) {
           <Typography variant='h1'>
             Productos
           </Typography>
+          <Link href='/'>home</Link>
         </Paper>
+        {loading && <div>is Loading...</div>}
 
         {
-          products.map((product) => (
+          data && data.map((product) => (
             <Paper key={product._id} elevation={2} sx={{ m: 5, p: 5 }}>
               <Typography variant='h3'>
                 {product.title}
@@ -34,34 +37,5 @@ export default function Productos({ products }) {
       </main>
     </div>
   );
-}
-
-const query = groq`
- *[_type == "product"] {
-  _id,
-  title,
-  brand,
-  code,
-  image,
-  slug,
-  stock,
-  "categories": categories[]->{_id, title},
-  "colors": colors[]->{_id, title, value},
-  "sizes": sizes[]->{_id, title},
-  "genders": genders[]->{_id, title},
-  materials,
-  unitPrice,
-  wholesalePrice
-}
-`
-
-export async function getStaticProps({preview = false}) {
-  const products = await getClient(preview).fetch(query)
-
-  return {
-    props: {
-      products
-    }
-  }
 }
 
