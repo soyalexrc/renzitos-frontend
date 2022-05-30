@@ -30,7 +30,7 @@ function CartScreen() {
         unitPrice: item.unitPrice,
         wholeSalePrice: item.wholeSalePrice,
         image: item.image,
-        quantity: quantity === '100+' ? 100 : quantity
+        quantity
       }
     })
   }
@@ -91,7 +91,7 @@ function CartScreen() {
                         >
                           {
                             [1, 2, 3, 4, 5, 6, 12, 48, 96, '100+'].map((value, index) => (
-                              <MenuItem key={index + 1} value={value}>{value}</MenuItem>
+                              <MenuItem key={index + 1} value={value === '100+' ? 100 : value}>{value === '100+' ? 100 : value}</MenuItem>
                             ))
                           }
                         </Select>
