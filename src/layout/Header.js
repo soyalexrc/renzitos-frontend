@@ -1,5 +1,15 @@
+import {Badge, IconButton} from "@mui/material";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import {useContext} from "react";
+import {Store} from "../context/StoreContext";
+
 export default function Header() {
+  const {state: {cart: {cartItems}}} = useContext(Store)
   return (
-    <div>Hello from Header </div>
+    <IconButton aria-label="cart">
+      <Badge badgeContent={cartItems.length} color="secondary">
+        <ShoppingCartIcon/>
+      </Badge>
+    </IconButton>
   )
 }

@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useMemo } from "react";
+import {useMemo} from "react";
 // material
 import { CssBaseline } from "@mui/material";
 import {
@@ -23,7 +23,7 @@ ThemeConfig.propTypes = {
 
 export default function ThemeConfig({ children }) {
   const themeDirection = "ltr";
-  const isLight = "light";
+  const isLight = true;
 
   const themeOptions = useMemo(
     () => ({
