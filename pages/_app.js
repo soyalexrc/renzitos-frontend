@@ -1,11 +1,11 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { CacheProvider } from '@emotion/react';
-import theme from '../src/theme/theme';
+import {CacheProvider} from '@emotion/react';
 import createEmotionCache from '../src/theme/createEmotionCache';
+import ThemeConfig from '../src/theme'
+import Layout from "../src/layout";
+import {StoreProvider} from "../src/context/StoreContext";
 
 // Client-side cache shared for the whole session
 // of the user in the browser.
@@ -13,24 +13,29 @@ import createEmotionCache from '../src/theme/createEmotionCache';
 const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
-  const { Component, emotionCache =
-    clientSideEmotionCache, pageProps } = props;
+
+  const {
+    Component, emotionCache =
+      clientSideEmotionCache, pageProps
+  } = props;
 
   return (
     <CacheProvider value={emotionCache}>
       <Head>
         <meta name="viewport"
-              content="initial-scale=1, width=device-width" />
+              content="initial-scale=1, width=device-width"/>
       </Head>
-      <ThemeProvider theme={theme}>
 
-        {/* CssBaseline kickstart an elegant,
+      {/* CssBaseline kickstart an elegant,
 				consistent, and simple baseline to
 				build upon. */}
-
-        <CssBaseline />
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <ThemeConfig>
+        <StoreProvider>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </StoreProvider>
+      </ThemeConfig>
     </CacheProvider>
   );
 }
