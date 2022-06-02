@@ -8,7 +8,7 @@ import Layout from "../src/layout";
 import {StoreProvider} from "../src/context/StoreContext";
 
 // Client-side cache shared for the whole session
-// of the user in the browser.
+// of the users in the browser.
 
 const clientSideEmotionCache = createEmotionCache();
 

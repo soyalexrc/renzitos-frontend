@@ -1,10 +1,33 @@
 import Head from "next/head";
-import {Paper, Typography} from "@mui/material";
+import {Button, Paper, Typography} from "@mui/material";
 import groq from "groq";
 import {getClient} from "../lib/sanity-server";
 import Link from "next/link";
+import {urlForThumbnail} from "../utils/image";
+import {useContext} from "react";
+import {Store} from "../src/context/StoreContext";
 
 export default function Home({ products }) {
+
+  const {state: {cart: {cartItems}}, dispatch} = useContext(Store)
+
+  async function addToCartHandler(item) {
+    const existItem = cartItems.find(x => x._key === item._id)
+    const quantity = existItem ? existItem.quantity + 1 : 1;
+
+    dispatch({
+      type: 'ADD_ITEM', payload: {
+        _key: item._id,
+        name: item.title,
+        slug: item.slug.current,
+        unitPrice: item.unitPrice,
+        wholeSalePrice: item.wholeSalePrice,
+        image: urlForThumbnail(item.image),
+        quantity
+      }
+    })
+  }
+
   console.log('products', products);
   return (
     <div>
@@ -28,6 +51,7 @@ export default function Home({ products }) {
                 {product.title}
               </Typography>
               <Link href={`/productos/${product.slug.current}`}>Ir a verlo!</Link>
+              <Button onClick={() => addToCartHandler(product)}>Agregar al carrito</Button>
             </Paper>
           ))
         }
