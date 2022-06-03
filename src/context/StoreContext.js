@@ -6,8 +6,8 @@ export const Store = createContext();
 const initialState = {
   cart: {
     cartItems: Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')) : [],
-    userInfo: Cookies.get('userInfo') ? JSON.parse(Cookies.get('userInfo')) : null
-  }
+  },
+  userInfo: Cookies.get('userInfo') ? JSON.parse(Cookies.get('userInfo')) : null
 }
 
 function reducer(state, action) {
@@ -19,21 +19,23 @@ function reducer(state, action) {
         ? state.cart.cartItems.map(item => item._key === existingItem._key ? newItem : item)
         : [...state.cart.cartItems, newItem];
       Cookies.set('cartItems', JSON.stringify(cartItems));
-      return { ...state, cart: {...state.cart, cartItems}}
+      return {...state, cart: {...state.cart, cartItems}}
     }
     case 'REMOVE_ITEM': {
       const cartItems = state.cart.cartItems.filter(item => item._key !== action.payload._key);
       Cookies.set('cartItems', JSON.stringify(cartItems));
-      return { ...state, cart: {...state.cart, cartItems}}
+      return {...state, cart: {...state.cart, cartItems}}
     }
     case 'USER_LOGIN':
-    return {...state, userInfo: action.payload}
+      return {...state, userInfo: action.payload}
+    case 'USER_LOGOUT':
+      return {...state, userInfo: null}
   }
 }
 
 export function StoreProvider({children}) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const value = { state, dispatch };
+  const value = {state, dispatch};
   return <Store.Provider value={value}>{children}</Store.Provider>;
 }
 

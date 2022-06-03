@@ -2,6 +2,7 @@ import nc from 'next-connect';
 import bcrypt from 'bcryptjs';
 import axios from 'axios';
 import {config} from '../../../utils/config'
+import client from '../../../utils/client';
 import {signToken} from "../../../utils/auth";
 
 const handler = nc();
@@ -21,6 +22,14 @@ handler.post(async (req, res) => {
       }
     }
   ]
+
+  const existUser = await client.fetch(
+    `*[_type == 'user' && email == $email][0]`, {email: req.body.email}
+  )
+
+  if (existUser) return res.status(401).json({message: 'Email already exist!'})
+  alert(existUser);
+
   const {data} = await axios.post(
     `https://${projectId}.api.sanity.io/v1/data/mutate/${dataset}?returnIds=true`,
     {mutations: createMutations},

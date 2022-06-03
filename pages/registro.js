@@ -42,12 +42,10 @@ export default function LoginScreen() {
           email: values.email,
           password: values.password
         })
-        if (data.status !== (500 || 404)) {
-          dispatch({type: 'USER_LOGIN', payload: data})
-          Cookies.set('userInfo', JSON.stringify(data));
-          router.push('/')
-          resetForm();
-        }
+        dispatch({type: 'USER_LOGIN', payload: data})
+        Cookies.set('userInfo', JSON.stringify(data));
+        router.push('/')
+        resetForm();
         setSubmitting(false);
       } catch (error) {
         console.error(error);
