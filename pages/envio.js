@@ -28,7 +28,7 @@ export default function ShippingScreen() {
       postalCode: shippingAddress.postalCode,
     },
     validationSchema: ShippingSchema,
-    onSubmit: async (values, {setSubmitting, resetForm}) => {
+    onSubmit: async (values, {setSubmitting}) => {
       try {
         setSubmitting(true);
         dispatch({type: 'SAVE_SHIPPING_ADDRESS', payload: values})
@@ -58,9 +58,9 @@ export default function ShippingScreen() {
               <TextField
                 fullWidth
                 type="text"
-                {...getFieldProps("fullName")}
                 size="small"
                 placeholder="Nombre completo"
+                {...getFieldProps("fullName")}
                 error={Boolean(touched.fullName && errors.fullName)}
                 helperText={touched.fullName && errors.fullName}
                 sx={{mb: 2}}

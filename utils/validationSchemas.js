@@ -18,3 +18,7 @@ export const ShippingSchema = Yup.object().shape({
   city: Yup.string().required('Este campo es requerido'),
   postalCode: Yup.string().required('Este campo es requerido'),
 })
+
+export const PaymentMethodSchema = Yup.object().shape({
+  paymentMethod: Yup.string().required('Este campo es requerido'),
+})
