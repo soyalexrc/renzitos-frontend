@@ -28,7 +28,6 @@ handler.post(async (req, res) => {
   )
 
   if (existUser) return res.status(401).json({message: 'Email already exist!'})
-  alert(existUser);
 
   const {data} = await axios.post(
     `https://${projectId}.api.sanity.io/v1/data/mutate/${dataset}?returnIds=true`,

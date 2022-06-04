@@ -9,22 +9,18 @@ import {useRouter} from "next/router";
 import Cookies from 'js-cookie'
 
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const {state, dispatch} = useContext(Store)
   const {userInfo} = state;
   const router = useRouter();
-
-  async function getData() {
-    await axios.get('/api/hello')
-  }
+  const {redirect} = router.query;
 
   useEffect(() => {
     if (userInfo) {
-      router.push('/')
+      router.push(redirect || '/')
     }
 
-    // getData()
-  }, [router, userInfo])
+  }, [router, userInfo, redirect])
 
   const formik = useFormik({
     initialValues: {
@@ -44,7 +40,7 @@ export default function LoginScreen() {
         })
         dispatch({type: 'USER_LOGIN', payload: data})
         Cookies.set('userInfo', JSON.stringify(data));
-        router.push('/')
+        router.push(redirect || '/')
         resetForm();
         setSubmitting(false);
       } catch (error) {
@@ -120,8 +116,12 @@ export default function LoginScreen() {
             </Button>
           </Form>
         </FormikProvider>
-        <Typography>Ya tienes cuenta? <NextLink href='/login' passHref><Link>Inicia
-          Sesion!</Link></NextLink></Typography>
+        <Typography>
+          Ya tienes cuenta?
+          <NextLink href={`/registro?redirect=${redirect || '/'}`} passHref>
+            <Link>Inicia Sesion!</Link>
+          </NextLink>
+        </Typography>
       </Box>
     </Container>
   )

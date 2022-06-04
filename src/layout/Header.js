@@ -29,13 +29,14 @@ export default function Header() {
     dispatch({type: 'USER_LOGOUT'})
     jsCookie.remove('userInfo')
     jsCookie.remove('cartItems')
+    jsCookie.remove('shippingAddress')
     router.push('/')
   }
 
 
   return (
     <Box sx={{display: 'flex', justifyContent: 'space-between', p: 5}}>
-      <IconButton aria-label="cart">
+      <IconButton aria-label="cart" onClick={() => router.push('/carrito')}>
         <Badge badgeContent={cartItems.length} color="secondary">
           <ShoppingCartIcon/>
         </Badge>

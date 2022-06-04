@@ -13,12 +13,13 @@ export default function LoginScreen() {
   const {state, dispatch} = useContext(Store)
   const {userInfo} = state;
   const router = useRouter();
+  const {redirect} = router.query;
 
   useEffect(() => {
     if (userInfo) {
-      router.push('/')
+      router.push(redirect || '/')
     }
-  }, [])
+  }, [router, userInfo, redirect])
 
 
   const formik = useFormik({
@@ -36,7 +37,7 @@ export default function LoginScreen() {
         })
         dispatch({type: 'USER_LOGIN', payload: data})
         Cookies.set('userInfo', JSON.stringify(data));
-        await router.push('/')
+        await router.push(redirect || '/')
         resetForm();
         setSubmitting(false);
       } catch (error) {
@@ -91,8 +92,11 @@ export default function LoginScreen() {
             </Button>
           </Form>
         </FormikProvider>
-        <Typography> No tienes cuenta aun? <NextLink href='/registro'
-                                                     passHref><Link>Registrate!</Link></NextLink></Typography>
+        <Typography> No tienes cuenta aun?
+          <NextLink href={`/login?redirect=${redirect || '/'}`} passHref>
+            <Link>Registrate!</Link>
+          </NextLink>
+        </Typography>
       </Box>
     </Container>
   )
