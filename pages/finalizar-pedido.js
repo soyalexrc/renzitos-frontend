@@ -65,10 +65,10 @@ function PlaceOrderScreen() {
               authorization: `Bearer ${userInfo.token}`
             }
           });
-      // await dispatch({type: 'CLEAR_CART'})
-      // Cookies.remove('cartItems')
+      await dispatch({type: 'CLEAR_CART'})
+      Cookies.remove('cartItems')
       setLoading(false)
-      // router.push(`/orden/${data}`)
+      router.push(`/orden/${data}`)
 
     } catch (err) {
       setLoading(false)
