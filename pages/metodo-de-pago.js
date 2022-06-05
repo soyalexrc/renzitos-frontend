@@ -1,15 +1,15 @@
 import CheckoutWizard from "../src/components/cart/CheckoutWizard";
 import {Box, Button, Container, RadioGroup, Radio, Typography, FormControlLabel} from "@mui/material";
 import {Form, FormikProvider, useFormik} from "formik";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect} from "react";
 import {Store} from "../src/context/StoreContext";
 import {useRouter} from "next/router";
-import {PaymentMethodSchema, ShippingSchema} from "../utils/validationSchemas";
+import {PaymentMethodSchema} from "../utils/validationSchemas";
 import Cookies from 'js-cookie'
 
 export default function PaymentScreen() {
   const {state, dispatch} = useContext(Store)
-  const {userInfo, cart: {shippingAddress, paymentMethod}} = state;
+  const {cart: {shippingAddress, paymentMethod}} = state;
   const router = useRouter();
 
   useEffect(() => {
