@@ -1,10 +1,27 @@
 import {Form, FormikProvider, useFormik} from "formik";
 import {LoginSchema} from "../utils/validationSchemas";
-import * as NextLink from 'next/link'
+import NextLink from 'next/link'
 import {Box, Button, Container, TextField, Typography, Link} from "@mui/material";
+import axios from "axios";
+import Cookies from "js-cookie";
+import {useContext, useEffect} from "react";
+import {useRouter} from 'next/router';
+import {Store} from "../src/context/StoreContext";
 
 
 export default function LoginScreen() {
+  const {state, dispatch} = useContext(Store)
+  const {userInfo} = state;
+  const router = useRouter();
+  const {redirect} = router.query;
+
+  useEffect(() => {
+    if (userInfo) {
+      router.push(redirect || '/')
+    }
+  }, [router, userInfo, redirect])
+
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -14,12 +31,18 @@ export default function LoginScreen() {
     onSubmit: async (values, {setSubmitting, resetForm}) => {
       try {
         setSubmitting(true);
-        await console.log(values);
-        setSubmitting(false);
+        const {data} = await axios.post('/api/users/login', {
+          email: values.email,
+          password: values.password
+        })
+        dispatch({type: 'USER_LOGIN', payload: data})
+        Cookies.set('userInfo', JSON.stringify(data));
+        await router.push(redirect || '/')
         resetForm();
+        setSubmitting(false);
       } catch (error) {
         console.error(error);
-        resetForm();
+        // resetForm();
         setSubmitting(false);
       }
     },
@@ -30,7 +53,7 @@ export default function LoginScreen() {
   return (
     <Container sx={{py: {xs: 5, md: 10}}}>
       <Box maxWidth={800} width="100%" display="block" mx="auto">
-        <Typography variant="h2" sx={{mb: 2}} >
+        <Typography variant="h2" sx={{mb: 2}}>
           Inicia Sesion
         </Typography>
         <FormikProvider value={formik}>
@@ -65,11 +88,15 @@ export default function LoginScreen() {
               sx={{display: "block", mx: "auto"}}
             >
               {isSubmitting && 'Ingresando...'}
-              {!isSubmitting  && 'Ingresar'}
+              {!isSubmitting && 'Ingresar'}
             </Button>
           </Form>
         </FormikProvider>
-      <Typography> No tienes cuenta aun? <NextLink href='/registro' passHref><Link>Registrate!</Link></NextLink></Typography>
+        <Typography> No tienes cuenta aun?
+          <NextLink href={`/login?redirect=${redirect || '/'}`} passHref>
+            <Link>Registrate!</Link>
+          </NextLink>
+        </Typography>
       </Box>
     </Container>
   )

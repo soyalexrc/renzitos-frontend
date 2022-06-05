@@ -1,10 +1,27 @@
 import {Form, FormikProvider, useFormik} from "formik";
 import {RegisterSchema} from "../utils/validationSchemas";
 import {Box, Button, Container, Link, TextField, Typography} from "@mui/material";
-import * as NextLink from "next/link";
+import NextLink from "next/link";
+import axios from 'axios';
+import {useContext, useEffect} from "react";
+import {Store} from '../src/context/StoreContext'
+import {useRouter} from "next/router";
+import Cookies from 'js-cookie'
 
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
+  const {state, dispatch} = useContext(Store)
+  const {userInfo} = state;
+  const router = useRouter();
+  const {redirect} = router.query;
+
+  useEffect(() => {
+    if (userInfo) {
+      router.push(redirect || '/')
+    }
+
+  }, [router, userInfo, redirect])
+
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -16,12 +33,19 @@ export default function LoginScreen() {
     onSubmit: async (values, {setSubmitting, resetForm}) => {
       try {
         setSubmitting(true);
-        await console.log(values);
-        setSubmitting(false);
+        const {data} = await axios.post('/api/users/register', {
+          name: values.name,
+          email: values.email,
+          password: values.password
+        })
+        dispatch({type: 'USER_LOGIN', payload: data})
+        Cookies.set('userInfo', JSON.stringify(data));
+        router.push(redirect || '/')
         resetForm();
+        setSubmitting(false);
       } catch (error) {
         console.error(error);
-        resetForm();
+        // resetForm();
         setSubmitting(false);
       }
     },
@@ -32,7 +56,7 @@ export default function LoginScreen() {
   return (
     <Container sx={{py: {xs: 5, md: 10}}}>
       <Box maxWidth={800} width="100%" display="block" mx="auto">
-        <Typography variant="h2" sx={{mb: 2}} >
+        <Typography variant="h2" sx={{mb: 2}}>
           Registrate
         </Typography>
         <FormikProvider value={formik}>
@@ -88,11 +112,16 @@ export default function LoginScreen() {
               sx={{display: "block", mx: "auto"}}
             >
               {isSubmitting && 'Registrando...'}
-              {!isSubmitting  && 'Registrarse'}
+              {!isSubmitting && 'Registrarse'}
             </Button>
           </Form>
         </FormikProvider>
-        <Typography>Ya tienes cuenta? <NextLink href='/login' passHref><Link>Inicia Sesion!</Link></NextLink></Typography>
+        <Typography>
+          Ya tienes cuenta?
+          <NextLink href={`/registro?redirect=${redirect || '/'}`} passHref>
+            <Link>Inicia Sesion!</Link>
+          </NextLink>
+        </Typography>
       </Box>
     </Container>
   )

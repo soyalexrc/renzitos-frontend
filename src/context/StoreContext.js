@@ -5,8 +5,11 @@ export const Store = createContext();
 
 const initialState = {
   cart: {
-    cartItems: Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')) : []
-  }
+    cartItems: Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')) : [],
+    shippingAddress: Cookies.get('shippingAddress') ? JSON.parse(Cookies.get('shippingAddress')) : {},
+    paymentMethod: Cookies.get('paymentMethod') ? Cookies.get('paymentMethod') : ''
+  },
+  userInfo: Cookies.get('userInfo') ? JSON.parse(Cookies.get('userInfo')) : null
 }
 
 function reducer(state, action) {
@@ -18,19 +21,41 @@ function reducer(state, action) {
         ? state.cart.cartItems.map(item => item._key === existingItem._key ? newItem : item)
         : [...state.cart.cartItems, newItem];
       Cookies.set('cartItems', JSON.stringify(cartItems));
-      return { ...state, cart: {...state.cart, cartItems}}
+      return {...state, cart: {...state.cart, cartItems}}
     }
     case 'REMOVE_ITEM': {
       const cartItems = state.cart.cartItems.filter(item => item._key !== action.payload._key);
       Cookies.set('cartItems', JSON.stringify(cartItems));
-      return { ...state, cart: {...state.cart, cartItems}}
+      return {...state, cart: {...state.cart, cartItems}}
     }
+    case 'USER_LOGIN':
+      return {...state, userInfo: action.payload}
+    case 'USER_LOGOUT':
+      return {...state, userInfo: null, cart: {cartItems: [], shippingAddress: {}}}
+    case 'SAVE_SHIPPING_ADDRESS':
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          shippingAddress: action.payload
+        }
+      }
+    case 'SAVE_PAYMENT_METHOD':
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          paymentMethod: action.payload
+        }
+      }
+    case 'CLEAR_CART':
+      return { ...state, cart: {...state.cart, cartItems: []} }
   }
 }
 
 export function StoreProvider({children}) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const value = { state, dispatch };
+  const value = {state, dispatch};
   return <Store.Provider value={value}>{children}</Store.Provider>;
 }
 

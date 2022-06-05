@@ -1,6 +1,7 @@
 import {useContext} from "react";
 import {Store} from "../src/context/StoreContext";
-import * as NextLink from 'next/link'
+import NextLink from 'next/link'
+import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import {
   Box,
@@ -16,10 +17,11 @@ import {
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import Image from "next/image";
-import {urlForThumbnail} from "../utils/image";
+
 
 function CartScreen() {
   const {state: {cart: {cartItems}}, dispatch} = useContext(Store);
+  const router = useRouter();
 
   async function updateCartHandler(item, quantity) {
     dispatch({
@@ -123,7 +125,7 @@ function CartScreen() {
                 </Typography>
               </ListItem>
               <ListItem>
-                <Button color='primary' fullWidth>Checkout</Button>
+                <Button color='primary' onClick={() => router.push('/envio')} fullWidth>Checkout</Button>
               </ListItem>
             </List>
           </Paper>
