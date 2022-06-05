@@ -4,7 +4,7 @@ import Link from "next/link";
 import useGetProducts from "../../src/hooks/api/useGetProducts";
 
 export default function Productos() {
-  const {data, loading, error} = useGetProducts()
+  const {data, loading} = useGetProducts()
   console.log('data', data);
 
   return (

@@ -1,5 +1,5 @@
 import Head from "next/head";
-import {Paper, Typography} from "@mui/material";
+import {Paper} from "@mui/material";
 import groq from "groq";
 import {getClient} from "../../lib/sanity-server";
 import Link from "next/link";

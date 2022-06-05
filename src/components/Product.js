@@ -31,7 +31,7 @@ export default function Product({ product }) {
       <Typography variant='h1'>
         Producto {product.slug.current} {product.title}
       </Typography>
-      <Image src={urlFor(product.image)} width={500} height={500}/>
+      <Image src={urlFor(product.image)} width={500} height={500} alt='imagen de prodcuto' />
       <button onClick={() => addToCart(product)}>add to cart</button>
     </Paper>
   )
