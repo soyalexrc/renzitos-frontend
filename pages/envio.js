@@ -1,9 +1,7 @@
 import CheckoutWizard from "../src/components/cart/CheckoutWizard";
-import {Box, Button, Container, Link, TextField, Typography} from "@mui/material";
+import {Box, Button, Container, TextField, Typography} from "@mui/material";
 import {Form, FormikProvider, useFormik} from "formik";
-import * as NextLink from "next/link";
-import {RegisterSchema, ShippingSchema} from "../utils/validationSchemas";
-import axios from "axios";
+import { ShippingSchema} from "../utils/validationSchemas";
 import Cookies from "js-cookie";
 import {useContext, useEffect} from "react";
 import {Store} from "../src/context/StoreContext";

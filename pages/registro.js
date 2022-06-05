@@ -1,7 +1,7 @@
 import {Form, FormikProvider, useFormik} from "formik";
 import {RegisterSchema} from "../utils/validationSchemas";
 import {Box, Button, Container, Link, TextField, Typography} from "@mui/material";
-import * as NextLink from "next/link";
+import NextLink from "next/link";
 import axios from 'axios';
 import {useContext, useEffect} from "react";
 import {Store} from '../src/context/StoreContext'

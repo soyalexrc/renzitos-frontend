@@ -1,6 +1,6 @@
 import {Form, FormikProvider, useFormik} from "formik";
 import {LoginSchema} from "../utils/validationSchemas";
-import * as NextLink from 'next/link'
+import NextLink from 'next/link'
 import {Box, Button, Container, TextField, Typography, Link} from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";

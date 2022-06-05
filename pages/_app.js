@@ -6,6 +6,7 @@ import createEmotionCache from '../src/theme/createEmotionCache';
 import ThemeConfig from '../src/theme'
 import Layout from "../src/layout";
 import {StoreProvider} from "../src/context/StoreContext";
+import {PayPalScriptProvider} from "@paypal/react-paypal-js";
 
 // Client-side cache shared for the whole session
 // of the users in the browser.
@@ -32,7 +33,9 @@ export default function MyApp(props) {
       <ThemeConfig>
         <StoreProvider>
           <Layout>
-            <Component {...pageProps} />
+            <PayPalScriptProvider deferLoading={true} options={{'client-id': proccess.env.PAYPAL_CLIENT_ID}}>
+              <Component {...pageProps} />
+            </PayPalScriptProvider>
           </Layout>
         </StoreProvider>
       </ThemeConfig>

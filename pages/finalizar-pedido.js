@@ -13,17 +13,16 @@ import {
   TableHead, TableRow,
   Typography, TableBody, TableCell
 } from "@mui/material";
-import * as NextLink from 'next/link';
+import NextLink from 'next/link';
 import {useContext, useEffect, useState} from "react";
 import {Store} from "../src/context/StoreContext";
 import {useRouter} from "next/router";
-import Cookies from 'js-cookie'
 import Image from "next/image";
 import dynamic from 'next/dynamic';
 import axios from "axios";
 
 function PlaceOrderScreen() {
-  const {state, dispatch} = useContext(Store)
+  const {state} = useContext(Store)
   const [loading, setLoading] = useState(false);
   const {userInfo, cart: {shippingAddress, paymentMethod, cartItems}} = state;
   const router = useRouter();
@@ -65,10 +64,11 @@ function PlaceOrderScreen() {
               authorization: `Bearer ${userInfo.token}`
             }
           });
-      await dispatch({type: 'CLEAR_CART'})
-      Cookies.remove('cartItems')
+      // await dispatch({type: 'CLEAR_CART'})
+      // Cookies.remove('cartItems')
       setLoading(false)
-      router.push(`/orden/${data}`)
+      console.log(data);
+      router.push(`/orden/${data.data}`)
 
     } catch (err) {
       setLoading(false)
@@ -182,6 +182,16 @@ function PlaceOrderScreen() {
                     </Grid>
                     <Grid item xs={6}>
                       <Typography align='right'>$ {itemsPrice} </Typography>
+                    </Grid>
+                  </Grid>
+                </ListItem>
+                <ListItem>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <Typography>IVA: </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography align='right'>$ {taxPrice} </Typography>
                     </Grid>
                   </Grid>
                 </ListItem>

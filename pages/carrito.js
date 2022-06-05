@@ -1,6 +1,6 @@
 import {useContext} from "react";
 import {Store} from "../src/context/StoreContext";
-import * as NextLink from 'next/link'
+import NextLink from 'next/link'
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import {
