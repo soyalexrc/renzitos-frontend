@@ -15,7 +15,7 @@ export default function Header() {
 
   function loginMenuCloseHandler(e, redirect) {
     setAnchorEl(null)
-    if (redirect) {
+    if (redirect && redirect !== 'backdropClick') {
       router.push(redirect)
     }
   }
