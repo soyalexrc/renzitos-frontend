@@ -1,11 +1,13 @@
 import Head from "next/head";
-import {Button, Paper, Typography} from "@mui/material";
+import {Button, Grid, Paper, Typography} from "@mui/material";
 import groq from "groq";
 import {getClient} from "../lib/sanity-server";
 import Link from "next/link";
 import {urlForThumbnail} from "../utils/image";
 import {useContext} from "react";
 import {Store} from "../src/context/StoreContext";
+import FiltersDesktop from "../src/components/FiltersDesktop";
+import SortDesktop from "../src/components/SortDektop";
 
 export default function Home({ products }) {
 
@@ -37,24 +39,34 @@ export default function Home({ products }) {
       </Head>
 
       <main>
-        <Paper elevation={5} sx={{p: 5}}>
-          <Typography variant='h1'>
-            home
-          </Typography>
-          <Link href='/productos'>productos</Link>
-        </Paper>
-
-        {
-          products.map((product) => (
-            <Paper key={product._id} elevation={2} sx={{ m: 5, p: 5 }}>
-              <Typography variant='h3'>
-                {product.title}
-              </Typography>
-              <Link href={`/productos/${product.slug.current}`}>Ir a verlo!</Link>
-              <Button onClick={() => addToCartHandler(product)}>Agregar al carrito</Button>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={3}>
+            <Paper elevation={2} sx={{ p: 1 }}>
+              <FiltersDesktop />
             </Paper>
-          ))
-        }
+          </Grid>
+          <Grid item xs={12} md={9}>
+            <SortDesktop />
+            <Paper elevation={5} sx={{p: 5}}>
+              <Typography variant='h1'>
+                home
+              </Typography>
+              <Link href='/productos'>productos</Link>
+            </Paper>
+
+            {
+              products.map((product) => (
+                <Paper key={product._id} elevation={2} sx={{ my: 5, p: 5 }}>
+                  <Typography variant='h3'>
+                    {product.title}
+                  </Typography>
+                  <Link href={`/productos/${product.slug.current}`}>Ir a verlo!</Link>
+                  <Button onClick={() => addToCartHandler(product)}>Agregar al carrito</Button>
+                </Paper>
+              ))
+            }
+          </Grid>
+        </Grid>
 
       </main>
     </div>

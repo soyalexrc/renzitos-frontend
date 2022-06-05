@@ -24,7 +24,7 @@ export default function Header() {
     setAnchorEl(e.currentTarget)
   }
 
-  function  logoutClickHandler() {
+  function logoutClickHandler() {
     setAnchorEl(null);
     dispatch({type: 'USER_LOGOUT'})
     jsCookie.remove('userInfo')
@@ -59,12 +59,15 @@ export default function Header() {
             keepMounted
             open={open}
             onClose={loginMenuCloseHandler}>
-              <MenuItem onClick={(e) => loginMenuCloseHandler(e, '/profile')}>
-                Profile
-              </MenuItem>
-              <MenuItem onClick={logoutClickHandler}>
-                Logout
-              </MenuItem>
+            <MenuItem onClick={(e) => loginMenuCloseHandler(e, '/perfil')}>
+              Profile
+            </MenuItem>
+            <MenuItem onClick={(e) => loginMenuCloseHandler(e, '/historial-de-ordenes')}>
+              Order History
+            </MenuItem>
+            <MenuItem onClick={logoutClickHandler}>
+              Logout
+            </MenuItem>
           </Menu>
         </>
       }
