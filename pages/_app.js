@@ -33,7 +33,7 @@ export default function MyApp(props) {
       <ThemeConfig>
         <StoreProvider>
           <Layout>
-            <PayPalScriptProvider deferLoading={true} options={{'client-id': proccess.env.PAYPAL_CLIENT_ID}}>
+            <PayPalScriptProvider deferLoading={true} options={{}}>
               <Component {...pageProps} />
             </PayPalScriptProvider>
           </Layout>
