@@ -93,7 +93,7 @@ export default function LoginScreen() {
           </Form>
         </FormikProvider>
         <Typography> No tienes cuenta aun?
-          <NextLink href={`/login?redirect=${redirect || '/'}`} passHref>
+          <NextLink href={`/registro?redirect=${redirect || '/'}`} passHref>
             <Link>Registrate!</Link>
           </NextLink>
         </Typography>

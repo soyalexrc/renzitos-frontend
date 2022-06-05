@@ -118,7 +118,7 @@ export default function RegisterScreen() {
         </FormikProvider>
         <Typography>
           Ya tienes cuenta?
-          <NextLink href={`/registro?redirect=${redirect || '/'}`} passHref>
+          <NextLink href={`/login?redirect=${redirect || '/'}`} passHref>
             <Link>Inicia Sesion!</Link>
           </NextLink>
         </Typography>
