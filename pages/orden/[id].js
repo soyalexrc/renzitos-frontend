@@ -1,6 +1,7 @@
 import {
   Alert,
-  Paper,
+  Box,
+  Card,
   CircularProgress,
   Grid,
   Link,
@@ -12,44 +13,46 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography, Box,
+  Typography,
 } from '@mui/material';
 import NextLink from 'next/link';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import {useContext, useEffect, useReducer} from 'react';
-import {PayPalButtons, usePayPalScriptReducer} from '@paypal/react-paypal-js';
-import {Store} from '../../src/context/StoreContext';
-import {useRouter} from 'next/router';
+import React, { useContext, useEffect, useReducer } from 'react';
+import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
+import { Store } from '../../src/context/StoreContext';
+import { useRouter } from 'next/router';
 import getError from '../../utils/error';
 import axios from 'axios';
 
 function reducer(state, action) {
   switch (action.type) {
     case 'FETCH_REQUEST':
-      return {...state, loading: true, error: ''};
+      return { ...state, loading: true, error: '' };
     case 'FETCH_SUCCESS':
-      return {...state, loading: false, order: action.payload, error: ''};
+      return { ...state, loading: false, order: action.payload, error: '' };
     case 'FETCH_FAIL':
-      return {...state, loading: false, error: action.payload};
+      return { ...state, loading: false, error: action.payload };
     case 'PAY_REQUEST':
-      return {...state, loadingPay: true};
+      return { ...state, loadingPay: true };
     case 'PAY_SUCCESS':
-      return {...state, loadingPay: false, successPay: true};
+      return { ...state, loadingPay: false, successPay: true };
     case 'PAY_FAIL':
-      return {...state, loadingPay: false, errorPay: action.payload};
+      return { ...state, loadingPay: false, errorPay: action.payload };
     case 'PAY_RESET':
-      return {...state, loadingPay: false, successPay: false, errorPay: ''};
+      return { ...state, loadingPay: false, successPay: false, errorPay: '' };
   }
 }
-
-function OrderScreen({params}) {
-  const {id: orderId} = params;
-  const [{loading, error, order, successPay}, dispatch] = useReducer(reducer, {
-    loading: true,
-    order: {},
-    error: '',
-  });
+function OrderScreen({ params }) {
+  const { id: orderId } = params;
+  const [{ loading, error, order, successPay }, dispatch] = useReducer(
+    reducer,
+    {
+      loading: true,
+      order: {},
+      error: '',
+    }
+  );
 
   const {
     shippingAddress,
@@ -66,103 +69,101 @@ function OrderScreen({params}) {
   } = order;
 
   const router = useRouter();
-  const {state} = useContext(Store);
-  const {userInfo} = state;
+  const { state } = useContext(Store);
+  const { userInfo } = state;
 
-  const [{isPending}, paypalDispatch] = usePayPalScriptReducer()
+  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
   useEffect(() => {
     if (!userInfo) {
-      return router.push('/login');
+      router.push('/login');
     }
     const fetchOrder = async () => {
       try {
-        dispatch({type: 'FETCH_REQUEST'});
-        const {data} = await axios.get(`/api/orders/${orderId}`, {
-          headers: {authorization: `Bearer ${userInfo.token}`},
+        dispatch({ type: 'FETCH_REQUEST' });
+        const { data } = await axios.get(`/api/orders/${orderId}`, {
+          headers: { authorization: `Bearer ${userInfo.token}` },
         });
 
-        dispatch({type: 'FETCH_SUCCESS', payload: data});
+        dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
-        dispatch({type: 'FETCH_FAIL', payload: getError(err)});
+        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
     if (!order._id || successPay || (order._id && order._id !== orderId)) {
       fetchOrder();
       if (successPay) {
-        dispatch({type: 'PAY_RESET'})
+        dispatch({ type: 'PAY_RESET' });
       }
     } else {
       const loadPaypalScript = async () => {
-        const {data: clientId} = await axios.get(`/api/keys/paypal`, {
-          headers: {authorization: `Bearer ${userInfo.token}`}
-        })
+        const { data: clientId } = await axios.get('/api/keys/paypal', {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        });
         paypalDispatch({
           type: 'resetOptions',
           value: {
             'client-id': clientId,
-            currency: 'USD'
+            currency: 'USD',
           },
-        })
-        paypalDispatch({
-          type: 'setLoadingStatus',
-          value: 'pending'
-        })
-      }
-      loadPaypalScript()
+        });
+        paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
+      };
+      loadPaypalScript();
     }
   }, [order, orderId, successPay, paypalDispatch, router, userInfo]);
 
   function createOrder(data, actions) {
-    return actions.order.create({
-      purchase_units: [
-        {
-          amount: { value: totalPrice }
-        }
-      ]
-    }).then((orderID) => {
-      return orderID
-    })
+    return actions.order
+      .create({
+        purchase_units: [
+          {
+            amount: { value: totalPrice },
+          },
+        ],
+      })
+      .then((orderID) => {
+        return orderID;
+      });
   }
-
   function onApprove(data, actions) {
     return actions.order.capture().then(async function (details) {
       try {
-        dispatch({type: 'PAY_REQUEST'});
-        const { data } = axios.put(
+        dispatch({ type: 'PAY_REQUEST' });
+        const { data } = await axios.put(
           `/api/orders/${order._id}/pay`,
           details,
           {
-            headers: { authorization: `Bearer ${userInfo.token}` }
+            headers: { authorization: `Bearer ${userInfo.token}` },
           }
-        )
-        dispatch({ type: 'PAYMENT_SUCCESS', payload: data })
-      }catch(err) {
-        dispatch({type: 'PAY_FAIL', payload: getError(err)})
-        //  TODO agregar snackbar de erorres
+        );
+        dispatch({ type: 'PAY_SUCCESS', payload: data });
+        // enqueueSnackbar('Order is paid', { variant: 'success' });
+      } catch (err) {
+        dispatch({ type: 'PAY_FAIL', payload: getError(err) });
+        // enqueueSnackbar(getError(err), { variant: 'error' });
       }
-    })
+    });
   }
-
   function onError(err) {
     alert(err)
-    //  TODO agregar snackbar de arror
+    // enqueueSnackbar(getError(err), { variant: 'error' });
   }
 
   return (
-    <Box>
+    <Box >
       <Typography component="h1" variant="h1">
         Order {orderId}
       </Typography>
 
       {loading ? (
-        <CircularProgress/>
+        <CircularProgress />
       ) : error ? (
         <Alert variant="error">{error}</Alert>
       ) : (
         <Grid container spacing={1}>
           <Grid item md={9} xs={12}>
-            <Paper elevation={2} sx={{mb: 5, p: 3}}>
+            <Card >
               <List>
                 <ListItem>
                   <Typography component="h2" variant="h2">
@@ -172,7 +173,6 @@ function OrderScreen({params}) {
                 <ListItem>
                   {shippingAddress.fullName}, {shippingAddress.address},{' '}
                   {shippingAddress.city}, {shippingAddress.postalCode},{' '}
-                  {shippingAddress.country}
                 </ListItem>
                 <ListItem>
                   Status:{' '}
@@ -181,9 +181,9 @@ function OrderScreen({params}) {
                     : 'not delivered'}
                 </ListItem>
               </List>
-            </Paper>
+            </Card>
 
-            <Paper elevation={2} sx={{mb: 5, p: 3}}>
+            <Card >
               <List>
                 <ListItem>
                   <Typography component="h2" variant="h2">
@@ -195,9 +195,9 @@ function OrderScreen({params}) {
                   Status: {isPaid ? `paid at ${paidAt}` : 'not paid'}
                 </ListItem>
               </List>
-            </Paper>
+            </Card>
 
-            <Paper elevation={2} sx={{mb: 5, p: 3}}>
+            <Card >
               <List>
                 <ListItem>
                   <Typography component="h2" variant="h2">
@@ -250,10 +250,10 @@ function OrderScreen({params}) {
                   </TableContainer>
                 </ListItem>
               </List>
-            </Paper>
+            </Card>
           </Grid>
           <Grid item md={3} xs={12}>
-            <Paper elevation={2} sx={{mb: 5, p: 3}}>
+            <Card>
               <List>
                 <ListItem>
                   <Typography variant="h2">Order Summary</Typography>
@@ -302,34 +302,31 @@ function OrderScreen({params}) {
                     </Grid>
                   </Grid>
                 </ListItem>
-                {
-                  !isPaid &&
+                {!isPaid && (
                   <ListItem>
                     {isPending ? (
-                      <CircularProgress/>
+                      <CircularProgress />
                     ) : (
-                      <Box sx={{width: '100%'}}>
+                      <Box>
                         <PayPalButtons
                           createOrder={createOrder}
                           onApprove={onApprove}
                           onError={onError}
-                        />
+                        ></PayPalButtons>
                       </Box>
-                    )
-                    }
+                    )}
                   </ListItem>
-                }
+                )}
               </List>
-            </Paper>
+            </Card>
           </Grid>
         </Grid>
       )}
     </Box>
   );
 }
-
-export function getServerSideProps({params}) {
-  return {props: {params}};
+export function getServerSideProps({ params }) {
+  return { props: { params } };
 }
 
-export default dynamic(() => Promise.resolve(OrderScreen), {ssr: false});
+export default dynamic(() => Promise.resolve(OrderScreen), { ssr: false });
